@@ -4,11 +4,13 @@ import com.example.backend.board.dto.BoardRequest;
 import com.example.backend.board.dto.BoardResponse;
 import com.example.backend.board.entity.Board;
 import com.example.backend.board.repository.BoardRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,11 +24,17 @@ public class BoardService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	public List<BoardResponse> findAll() {
-		return boardRepository.findAll()
-				.stream()
-				.map(BoardResponse::from)
-				.toList();
+	public Page<BoardResponse> findAll(int page, int size, String keyword) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+
+		if (keyword == null || keyword.isBlank()) {
+			return boardRepository.findAll(pageable)
+					.map(board -> BoardResponse.from(board));
+		}
+
+		return boardRepository
+				.findByTitleContainingIgnoreCaseOrWriterContainingIgnoreCaseOrContentContainingIgnoreCase(keyword,keyword,keyword,pageable)
+				.map(board -> BoardResponse.from(board));
 	}
 
 	public BoardResponse findById(Long id) {
