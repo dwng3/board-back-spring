@@ -2,10 +2,12 @@ package com.example.backend.board.controller;
 
 import com.example.backend.board.dto.BoardRequest;
 import com.example.backend.board.dto.BoardResponse;
-import com.example.backend.board.dto.PasswordCheckRequest;
 import com.example.backend.board.service.BoardService;
+import com.example.backend.security.CustomUserDetails;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +32,7 @@ public class BoardController {
 	@GetMapping
 	public Page<BoardResponse> getBoards(
 			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "5") int size,
 			@RequestParam(required = false) String keyword
 	) {
 		return boardService.findAll(page, size, keyword);
@@ -44,8 +46,8 @@ public class BoardController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public BoardResponse createBoard(@RequestBody BoardRequest request) {
-		return boardService.create(request);
+	public BoardResponse createBoard(@RequestBody BoardRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		return boardService.create(request, userDetails);
 	}
 
 	@PutMapping("/{id}")
@@ -55,8 +57,8 @@ public class BoardController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteBoard(@PathVariable Long id, @RequestBody PasswordCheckRequest request ) {
-		boardService.delete(id, request.password());
+	public void deleteBoard(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails ) {
+		boardService.delete(id, userDetails);
 	}
 
 	@PutMapping("/likes/{id}")
@@ -64,8 +66,4 @@ public class BoardController {
 		return boardService.updateLikeCount(id);
 	}
 
-	@PostMapping("/check/{id}")
-	public void checkBoardPassword(@PathVariable Long id, @RequestBody PasswordCheckRequest request) {
-		boardService.checkBoardPassword(id, request.password());
-	}
 }

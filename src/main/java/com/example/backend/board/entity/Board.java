@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "boards")
 public class Board {
@@ -40,17 +42,13 @@ public class Board {
 	@Column(nullable = false)
 	private Integer viewCount = 0;
 
-	@Column(nullable = false)
-	private String password;
-
 	protected Board() {
 	}
 
-	public Board(String title, String content, String writer, String password) {
+	public Board(String title, String content, String writer) {
 		this.title = title;
 		this.content = content;
 		this.writer = writer;
-		this.password = password;
 	}
 
 	@PrePersist
@@ -65,10 +63,9 @@ public class Board {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void update(String title, String content, String writer) {
+	public void update(String title, String content) {
 		this.title = title;
 		this.content = content;
-		this.writer = writer;
 	}
 
 	public void updateViewCount(Integer viewCount) {
@@ -77,42 +74,6 @@ public class Board {
 
 	public void updateLikeCount(Integer likeCount) {
 		this.likeCount = likeCount;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public String getWriter() {
-		return writer;
-	}
-
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public Integer getLikeCount() {
-		return likeCount;
-	}
-
-	public Integer getViewCount() {
-		return viewCount;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 }
