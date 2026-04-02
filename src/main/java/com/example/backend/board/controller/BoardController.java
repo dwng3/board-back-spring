@@ -4,7 +4,6 @@ import com.example.backend.board.dto.BoardRequest;
 import com.example.backend.board.dto.BoardResponse;
 import com.example.backend.board.service.BoardService;
 import com.example.backend.security.CustomUserDetails;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,47 +22,56 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/boards")
 public class BoardController {
 
-	private final BoardService boardService;
+    private final BoardService boardService;
 
-	public BoardController(BoardService boardService) {
-		this.boardService = boardService;
-	}
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
 
-	@GetMapping
-	public Page<BoardResponse> getBoards(
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size,
-			@RequestParam(required = false) String keyword
-	) {
-		return boardService.findAll(page, size, keyword);
-	}
+    @GetMapping
+    public Page<BoardResponse> getBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword
+    ) {
+        return boardService.findAll(page, size, keyword);
+    }
 
-	@GetMapping("/{id}")
-	public BoardResponse getBoard(@PathVariable Long id) {
-		boardService.updateViewCount(id);
-		return boardService.findById(id);
-	}
+    @GetMapping("/{id}")
+    public BoardResponse getBoard(@PathVariable Long id) {
+        boardService.updateViewCount(id);
+        return boardService.findById(id);
+    }
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public BoardResponse createBoard(@RequestBody BoardRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
-		return boardService.create(request, userDetails);
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public BoardResponse createBoard(
+            @RequestBody BoardRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return boardService.create(request, userDetails);
+    }
 
-	@PutMapping("/{id}")
-	public BoardResponse updateBoard(@PathVariable Long id, @RequestBody BoardRequest request) {
-		return boardService.update(id, request);
-	}
+    @PutMapping("/{id}")
+    public BoardResponse updateBoard(
+            @PathVariable Long id,
+            @RequestBody BoardRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return boardService.update(id, request, userDetails);
+    }
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteBoard(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails ) {
-		boardService.delete(id, userDetails);
-	}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBoard(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        boardService.delete(id, userDetails);
+    }
 
-	@PutMapping("/likes/{id}")
-	public BoardResponse updateLikeCount(@PathVariable Long id) {
-		return boardService.updateLikeCount(id);
-	}
-
+    @PutMapping("/likes/{id}")
+    public BoardResponse updateLikeCount(@PathVariable Long id) {
+        return boardService.updateLikeCount(id);
+    }
 }

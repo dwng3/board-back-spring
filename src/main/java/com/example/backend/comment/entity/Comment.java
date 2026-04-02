@@ -3,11 +3,17 @@ package com.example.backend.comment.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.example.backend.board.entity.Board;
+import com.example.backend.user.entity.User;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -22,14 +28,16 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String writer;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String content;
-    
-    @Column(nullable = false)
-    private Long boardId;
 
     @Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -40,10 +48,10 @@ public class Comment {
     protected Comment() {
     }
 
-    public Comment(String writer, String content, Long boardId) {
-        this.writer = writer;
+    public Comment(Board board, User user, String content) {
+        this.board = board;
+        this.user = user;
         this.content = content;
-        this.boardId = boardId;
     }
 
     @PrePersist
@@ -58,7 +66,7 @@ public class Comment {
 		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void update(String content) {
+	public void updateComment(String content) {
 		this.content = content;
 	}
 }

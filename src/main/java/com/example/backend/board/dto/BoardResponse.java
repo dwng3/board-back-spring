@@ -5,25 +5,27 @@ import com.example.backend.board.entity.Board;
 import java.time.LocalDateTime;
 
 public record BoardResponse(
-		Long id,
-		String title,
-		String content,
-		String writer,
-		Integer likeCount,
-		Integer viewCount,
-		LocalDateTime createdAt,
-		LocalDateTime updatedAt
+        Long id,
+        String title,
+        String content,
+        String writer,
+		String writerUsername,
+        Integer likeCount,
+        Integer viewCount,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
-	public static BoardResponse from(Board board) {
-		return new BoardResponse(
-				board.getId(),
-				board.getTitle(),
-				board.getContent(),
-				board.getWriter(),
-				board.getLikeCount(),
-				board.getViewCount(),
-				board.getCreatedAt(),
-				board.getUpdatedAt()
-		);
-	}
+    public static BoardResponse from(Board board) {
+        return new BoardResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getContent(),
+                board.getUser().getNickname(),
+                board.getUser().getUsername(),
+                board.getLikeCount(),
+                board.getViewCount(),
+                board.getCreatedAt(),
+                board.getUpdatedAt()
+        );
+    }
 }
